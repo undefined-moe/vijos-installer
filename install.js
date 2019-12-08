@@ -155,10 +155,10 @@ VJ_MAIL_FROM=${ctx.smtp_user}
     {
         title: 'Create account',
         task: async ctx => {
-            await exec(`docker-compose run --rm web vj4.model.user add -1 ${ctx.user} ${ctx.passwd} ${ctx.email}`);
-            await exec(`docker-compose run --rm web vj4.model.user add -2 judge ${ctx.judge_passwd} judge@vijos.org`);
-            await exec('docker-compose run --rm web vj4.model.user set_superadmin -1');
-            await exec('docker-compose run --rm web vj4.model.user set_judge -2');
+            await exec(`cd vijos && docker-compose run --rm web vj4.model.user add -1 ${ctx.user} ${ctx.passwd} ${ctx.email}`);
+            await exec(`cd vijos && docker-compose run --rm web vj4.model.user add -2 judge ${ctx.judge_passwd} judge@vijos.org`);
+            await exec('cd vijos && docker-compose run --rm web vj4.model.user set_superadmin -1');
+            await exec('cd vijos && docker-compose run --rm web vj4.model.user set_judge -2');
         }
     },
     {
