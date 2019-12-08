@@ -1,0 +1,17 @@
+{
+  "name": "vijos-installer",
+  "version": "0.0.0",
+  "description": "Vijos Easy Installer",
+  "main": "install.js",
+  "repository": "https://github.com/masnn/vijos-installer.git",
+  "author": "masnn",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "enquirer": "^2.3.2",
+    "listr": "^0.14.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "pkg": "^4.4.0"
+  }
+}
