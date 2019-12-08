@@ -109,7 +109,7 @@ services:
 `);
             fs.mkdirSync('vijos/data');
             fs.mkdirSync('vijos/data/judge');
-            fs.writeFileSync('vijos/data/config.yaml', `
+            fs.writeFileSync('vijos/data/judge/config.yaml', `
 hosts:
     localhost:
         server_url: web:8888
