@@ -4,29 +4,27 @@ const
     fs = require('fs'),
     assert = require('assert'),
     enquirer = require('enquirer'),
-    listr = require('listr');
-
-function Tool(name) {
-    return {
-        title: name,
-        task: ctx => {
-            return new Promise(resolve => {
-                try {
-                    child.exec(name, resolve);
-                    ctx[name] = true;
-                } catch (e) { resolve(); }
-            });
-        }
-    };
-}
-function exec(command) {
-    return new Promise((resolve, reject) => {
+    listr = require('listr'),
+    exec = command => new Promise((resolve, reject) => {
         child.exec(command, err => {
             if (err) reject(err);
             resolve();
         });
+    }),
+    Image = id => ({
+        title: id,
+        task: () => exec(`docker pull ${id}`)
+    }),
+    Tool = name => ({
+        title: name,
+        task: ctx => new Promise(resolve => {
+            try {
+                child.exec(name, resolve);
+                ctx[name] = true;
+            } catch (e) { resolve(); }
+        })
     });
-}
+
 let task = new listr([
     {
         title: 'Check System Version',
@@ -135,6 +133,11 @@ VJ_MQ_VHOST=/
 VJ_URL_PREFIX=${ctx.url}
 VJ_CDN_PREFIX=/
 VJ_DEFAULT_LOCALE=zh_CN
+VJ_SMTP_HOST=${ctx.smtp_host}
+VJ_SMTP_PORT=${ctx.smtp_port}
+VJ_SMTP_USER=${ctx.smtp_user}
+VJ_SMTP_PASSWORD=${ctx.smtp_passwd}
+VJ_MAIL_FROM=${ctx.smtp_user}
 `);
         }
     },
@@ -142,22 +145,7 @@ VJ_DEFAULT_LOCALE=zh_CN
         title: 'Pull Image (This may take a long time)',
         skip: ctx => ctx.image,
         task: () => new listr([
-            {
-                title: 'vj4',
-                task: () => exec('docker pull masnn/vj4:1.0')
-            },
-            {
-                title: 'jd5',
-                task: () => exec('docker pull masnn/jd5')
-            },
-            {
-                title: 'mongo',
-                task: () => exec('docker pull mongo')
-            },
-            {
-                title: 'rabbitmq',
-                task: () => exec('docker pull rabbitmq')
-            }
+            Image('masnn/vj4:1.0'), Image('masnn/jd5'), Image('mongo'), Image('rabbitmq')
         ])
     },
     {
@@ -205,6 +193,26 @@ VJ_DEFAULT_LOCALE=zh_CN
             type: 'confirm',
             name: 'image',
             message: 'Skip image pulling? (only when you already pulled the image) (vj4,jd5,mongo,rabbitmq)'
+        },
+        {
+            type: 'input',
+            name: 'smtp_host',
+            message: 'SMTP mail server host e.g. smtp.qq.com'
+        },
+        {
+            type: 'input',
+            name: 'smtp_user',
+            message: 'SMTP mail server user e.g. account@vijos.org'
+        },
+        {
+            type: 'input',
+            name: 'smtp_passwd',
+            message: 'SMTP mail server password'
+        },
+        {
+            type: 'input',
+            name: 'smtp_port',
+            message: 'SMTP mail server port (maybe 465 or 587)'
         }
     ]);
     global.config.port = global.config.url.split(':')[2];
