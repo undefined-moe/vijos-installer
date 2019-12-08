@@ -18,10 +18,10 @@ const
     Tool = name => ({
         title: name,
         task: ctx => new Promise(resolve => {
-            try {
-                child.exec(name, resolve);
-                ctx[name] = true;
-            } catch (e) { resolve(); }
+            child.exec(name, err => {
+                if (!err) ctx[name] = true;
+                resolve();
+            });
         })
     });
 
@@ -78,7 +78,7 @@ let task = new listr([
 version: '3'
 services:
     web:
-        image: masnn/vj4:1.0
+        image: masnn/vj4
         restart: always
         command: vj4.server
         env_file: .env
@@ -145,7 +145,7 @@ VJ_MAIL_FROM=${ctx.smtp_user}
         title: 'Pull Image (This may take a long time)',
         skip: ctx => ctx.image,
         task: () => new listr([
-            Image('masnn/vj4:1.0'), Image('masnn/jd5'), Image('mongo'), Image('rabbitmq')
+            Image('masnn/vj4'), Image('masnn/jd5'), Image('mongo'), Image('rabbitmq')
         ])
     },
     {
