@@ -112,7 +112,7 @@ services:
             fs.writeFileSync('vijos/data/judge/config.yaml', `
 hosts:
     localhost:
-        server_url: web:8888
+        server_url: http://web:8888
         uname: judge
         password: ${ctx.judge_passwd}
 `);
