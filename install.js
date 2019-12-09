@@ -18,7 +18,7 @@ const
     Tool = name => ({
         title: name,
         task: ctx => new Promise(resolve => {
-            child.exec(name, err => {
+            child.exec(name + ' --help', err => {
                 if (!err) ctx[name] = true;
                 resolve();
             });
@@ -143,7 +143,6 @@ VJ_MAIL_FROM=${ctx.smtp_user}
     },
     {
         title: 'Pull Image (This may take a long time)',
-        skip: ctx => ctx.image,
         task: () => new listr([
             Image('masnn/vj4'), Image('masnn/jd5'), Image('mongo'), Image('rabbitmq')
         ])
@@ -188,11 +187,6 @@ VJ_MAIL_FROM=${ctx.smtp_user}
             type: 'input',
             name: 'url',
             message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80'
-        },
-        {
-            type: 'confirm',
-            name: 'image',
-            message: 'Skip image pulling? (only when you already pulled the image) (vj4,jd5,mongo,rabbitmq)'
         },
         {
             type: 'input',
