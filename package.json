@@ -13,5 +13,9 @@
   "devDependencies": {
     "eslint": "^6.7.2",
     "pkg": "^4.4.0"
+  },
+  "pkg": {
+    "scripts": "install.js",
+    "assets": [ ".env", "docker-compose.yml", "config.yaml" ]
   }
 }

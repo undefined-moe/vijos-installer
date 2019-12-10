@@ -24,7 +24,27 @@ const
             });
         })
     });
-
+String.prototype.format = function(args) {
+    let result = this;
+    if (arguments.length > 0) {
+        if (arguments.length == 1 && typeof (args) == "object") {
+            for (var key in args) {
+                if(args[key]!=undefined){
+                    var reg = new RegExp("({" + key + "})", "g");
+                    result = result.replace(reg, args[key]);
+                }
+            }
+        } else {
+            for (var i = 0; i < arguments.length; i++) {
+                if (arguments[i] != undefined) {
+                    var reg= new RegExp("({)" + i + "(})", "g");
+                    result = result.replace(reg, arguments[i]);
+                }
+            }
+        }
+    }
+    return result;
+}
 let task = new listr([
     {
         title: 'Check System Version',
@@ -74,71 +94,11 @@ let task = new listr([
             Object.assign(ctx, global.config);
             ctx.judge_passwd = Math.random().toString();
             fs.mkdirSync('vijos');
-            fs.writeFileSync('vijos/docker-compose.yml', `
-version: '3'
-services:
-    web:
-        image: masnn/vj4
-        restart: always
-        command: vj4.server
-        env_file: .env
-        links:
-            - mongodb
-            - rabbitmq
-        ports: [ "${ctx.port}:8888" ]
-        depends_on:
-            - rabbitmq
-            - mongodb
-    judge:
-        restart: always
-        privileged: true
-        image: masnn/jd5
-        volumes:
-            - "./data/judge/config.yaml:/root/.config/jd5/config.yaml"
-            - "./data/judge/cache:/root/.cache/jd5"
-        links:
-            - web
-    rabbitmq:
-        restart: always
-        image: rabbitmq:latest
-    mongodb:
-        restart: always
-        image: mongo:latest
-        volumes:
-            - "./data/mongodb:/data/db"
-`);
+            fs.writeFileSync('vijos/docker-compose.yml', fs.readFileSync('./docker-compose.yml').toString().format(ctx));
             fs.mkdirSync('vijos/data');
             fs.mkdirSync('vijos/data/judge');
-            fs.writeFileSync('vijos/data/judge/config.yaml', `
-hosts:
-    localhost:
-        server_url: http://web:8888
-        uname: judge
-        password: ${ctx.judge_passwd}
-`);
-            fs.writeFileSync('vijos/.env', `
-# VJ_LISTEN=unix:/var/run/vj4/web.sock
-# VJ_LISTEN_GROUP=www-data
-# VJ_LISTEN_MODE=660
-# VJ_PREFORK=1
-VJ_DB_HOST=mongodb
-# VJ_DB_PORT=27017
-VJ_DB_NAME=vijos4
-# VJ_DB_USERNAME=
-# VJ_DB_PASSWORD=
-# VJ_DB_AUTH_SOURCE=
-VJ_MQ_HOST=rabbitmq
-VJ_MQ_VHOST=/
-# VJ_IP_HEADER=X-Real-IP
-VJ_URL_PREFIX=${ctx.url}
-VJ_CDN_PREFIX=/
-VJ_DEFAULT_LOCALE=zh_CN
-VJ_SMTP_HOST=${ctx.smtp_host}
-VJ_SMTP_PORT=${ctx.smtp_port}
-VJ_SMTP_USER=${ctx.smtp_user}
-VJ_SMTP_PASSWORD=${ctx.smtp_passwd}
-VJ_MAIL_FROM=${ctx.smtp_user}
-`);
+            fs.writeFileSync('vijos/data/judge/config.yaml', fs.readFileSync('./config.yaml').toString().format(ctx));
+            fs.writeFileSync('vijos/.env', fs.readFileSync('./.env').toString().format(ctx));
         }
     },
     {
@@ -171,22 +131,32 @@ VJ_MAIL_FROM=${ctx.smtp_user}
         {
             type: 'input',
             name: 'user',
-            message: 'Root Account Username'
+            message: 'Root Account Username',
+            validate: value => /[^\s\u3000](.{,254}[^\s\u3000])?/i.test(value)
         },
         {
             type: 'input',
             name: 'passwd',
-            message: 'Root Account Password'
+            message: 'Root Account Password',
+            validate: value => value.length >= 5
         },
         {
             type: 'input',
             name: 'email',
-            message: 'Root Account Email'
+            message: 'Root Account Email',
+            validate: value => {
+                const RE_MAIL = /^.+@.+\..+$/i;
+                return RE_MAIL.test(value);
+            }
         },
         {
             type: 'input',
             name: 'url',
-            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80'
+            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80',
+            validate: value => {
+                const RE_URL = /^https?:\/\/.+:[0-9]+$/i;
+                return RE_URL.test(value);
+            }
         },
         {
             type: 'input',
@@ -196,7 +166,11 @@ VJ_MAIL_FROM=${ctx.smtp_user}
         {
             type: 'input',
             name: 'smtp_user',
-            message: 'SMTP mail server user e.g. account@vijos.org'
+            message: 'SMTP mail server user e.g. account@vijos.org',
+            validate: value => {
+                const RE_MAIL = /^.+@.+\..+$/i;
+                return RE_MAIL.test(value);
+            }
         },
         {
             type: 'input',

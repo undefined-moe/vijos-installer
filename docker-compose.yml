@@ -1,0 +1,30 @@
+version: '3'
+services:
+    web:
+        image: masnn/vj4
+        restart: always
+        command: vj4.server
+        env_file: .env
+        links:
+            - mongodb
+            - rabbitmq
+        ports: [ "{port}:8888" ]
+        depends_on:
+            - rabbitmq
+            - mongodb
+    judge:
+        restart: always
+        privileged: true
+        image: masnn/jd5
+        volumes:
+            - "./data/judge/config.yaml:/root/.config/jd5/config.yaml"
+        links:
+            - web
+    rabbitmq:
+        restart: always
+        image: rabbitmq:latest
+    mongodb:
+        restart: always
+        image: mongo:latest
+        volumes:
+            - "./data/mongodb:/data/db"
