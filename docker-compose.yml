@@ -17,7 +17,7 @@ services:
         privileged: true
         image: hydrooj/judger:default
         volumes:
-            - "./data/judge/config.yaml:/root/.config/hydro/judger.yaml"
+            - "./data/judge/judger.yaml:/root/.config/hydro/judger.yaml"
         links:
             - web
     rabbitmq:
