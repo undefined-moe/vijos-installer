@@ -89,7 +89,7 @@ let task = new listr([
         title: 'Write File',
         task: ctx => {
             Object.assign(ctx, global.config);
-            ctx.judge_passwd = Math.random().toString();
+            ctx.judge_passwd = 'a' + Math.random().toString();
             fs.mkdirSync('vijos');
             fs.writeFileSync('vijos/docker-compose.yml', fs.readFileSync('./docker-compose.yml').toString().format(ctx));
             fs.mkdirSync('vijos/data');
@@ -149,9 +149,9 @@ let task = new listr([
         {
             type: 'input',
             name: 'url',
-            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80/',
+            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80',
             validate: value => {
-                const RE_URL = /^https?:\/\/.+:[0-9]+\/$/i;
+                const RE_URL = /^https?:\/\/.+:[0-9]+$/i;
                 return RE_URL.test(value);
             }
         },
@@ -177,7 +177,7 @@ let task = new listr([
         {
             type: 'input',
             name: 'smtp_port',
-            message: 'SMTP mail server port (maybe 465 or 587)'
+            message: 'SMTP mail server port (possibly 465 or 587)'
         }
     ]);
     global.config.port = global.config.url.split(':')[2];
