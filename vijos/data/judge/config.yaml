@@ -1,0 +1,5 @@
+hosts:
+    localhost:
+        server_url: http://web:8888
+        uname: judge
+        password: $0.7245001647046265

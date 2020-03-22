@@ -8,16 +8,16 @@ services:
         links:
             - mongodb
             - rabbitmq
-        ports: [ "{port}:8888" ]
+        ports: [ "80:8888" ]
         depends_on:
             - rabbitmq
             - mongodb
     judge:
         restart: always
         privileged: true
-        image: hydrooj/judger:default
+        image: masnn/jd5
         volumes:
-            - "./data/judge/config.yaml:/root/.config/hydro/judger.yaml"
+            - "./data/judge/config.yaml:/root/.config/jd5/config.yaml"
         links:
             - web
     rabbitmq:

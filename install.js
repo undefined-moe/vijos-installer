@@ -24,27 +24,24 @@ const
             });
         })
     });
-String.prototype.format = function(args) {
+String.prototype.format = function (args) {
     let result = this;
     if (arguments.length > 0) {
-        if (arguments.length == 1 && typeof (args) == "object") {
-            for (var key in args) {
-                if(args[key]!=undefined){
-                    var reg = new RegExp("({" + key + "})", "g");
+        if (arguments.length == 1 && typeof (args) == 'object') {
+            for (var key in args)
+                if (args[key] != undefined) {
+                    let reg = new RegExp('({' + key + '})', 'g');
                     result = result.replace(reg, args[key]);
                 }
-            }
-        } else {
-            for (var i = 0; i < arguments.length; i++) {
+        } else
+            for (var i = 0; i < arguments.length; i++)
                 if (arguments[i] != undefined) {
-                    var reg= new RegExp("({)" + i + "(})", "g");
+                    let reg = new RegExp('({)' + i + '(})', 'g');
                     result = result.replace(reg, arguments[i]);
                 }
-            }
-        }
     }
     return result;
-}
+};
 let task = new listr([
     {
         title: 'Check System Version',
@@ -78,7 +75,7 @@ let task = new listr([
                 skip: ctx => ctx.pip3 || ctx['docker-compose'],
                 task: async () => {
                     await exec('apt-get update');
-                    await exec('apt-get install -y python3-pip');
+                    await exec('apt-get install -y python3-pip python3-dev');
                 }
             },
             {
@@ -97,14 +94,14 @@ let task = new listr([
             fs.writeFileSync('vijos/docker-compose.yml', fs.readFileSync('./docker-compose.yml').toString().format(ctx));
             fs.mkdirSync('vijos/data');
             fs.mkdirSync('vijos/data/judge');
-            fs.writeFileSync('vijos/data/judge/config.yaml', fs.readFileSync('./config.yaml').toString().format(ctx));
+            fs.writeFileSync('vijos/data/judge/judger.yaml', fs.readFileSync('./judger.yaml').toString().format(ctx));
             fs.writeFileSync('vijos/.env', fs.readFileSync('./.env').toString().format(ctx));
         }
     },
     {
         title: 'Pull Image (This may take a long time)',
         task: () => new listr([
-            Image('masnn/vj4'), Image('masnn/jd5'), Image('mongo'), Image('rabbitmq')
+            Image('masnn/vj4'), Image('hydrooj/judger:default'), Image('mongo'), Image('rabbitmq')
         ])
     },
     {
@@ -152,9 +149,9 @@ let task = new listr([
         {
             type: 'input',
             name: 'url',
-            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80',
+            message: 'Which url will be the system run on? (with port) e.g. https://vijos.org:80/',
             validate: value => {
-                const RE_URL = /^https?:\/\/.+:[0-9]+$/i;
+                const RE_URL = /^https?:\/\/.+:[0-9]+\/$/i;
                 return RE_URL.test(value);
             }
         },

@@ -1,5 +1,5 @@
 hosts:
     localhost:
-        server_url: http://web:8888
+        server_url: http://web:8888/
         uname: judge
         password: ${judge_passwd}
