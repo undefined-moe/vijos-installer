@@ -1,0 +1,19 @@
+name: Build
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - uses: actions/checkout@v2
+    - run: npm install && npm install pkg -g
+    - run: pkg install.js -target=node10-linux-x64
+    - uses: actions/upload-artifact@master
+      with:
+        name: install
+        path: install

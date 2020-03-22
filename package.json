@@ -16,6 +16,6 @@
   },
   "pkg": {
     "scripts": "install.js",
-    "assets": [ ".env", "docker-compose.yml", "config.yaml" ]
+    "assets": [ ".env", "docker-compose.yml", "judger.yaml" ]
   }
 }
